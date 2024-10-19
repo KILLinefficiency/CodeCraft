@@ -1,5 +1,6 @@
 <script>
     import { getToastStore } from "@skeletonlabs/skeleton";
+    import { goto } from "$app/navigation";
     const toast = getToastStore();
 
     let username = "";
@@ -18,6 +19,8 @@
         .then(body => {
             if(body.status === "success") {
                 toast.trigger({ message: `User ${username} logged in.`, background: "variant-filled-success"});
+                localStorage.setItem("codeCraftUser", username);
+                goto(`/user/${username}`);
             }
             else if(body.status === "noUser") {
                 toast.trigger({ message: `User ${username} does not exists`, background: "variant-filled-warning" });
