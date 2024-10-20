@@ -1,22 +1,38 @@
 <script>
+    import { onMount } from "svelte";
     import Appbar from "$lib/Appbar.svelte";
     import { getToastStore } from "@skeletonlabs/skeleton";
     const toast = getToastStore();
 
     const submittedBy = localStorage.getItem("codeCraftUser");
+    let title = "";
     let problem = "";
     let testcases = [];
-    let newTestCase = "";
+    let newStdin = "";
+    let newStdout = "";
+
+    let problemID = 0;
+    onMount(() => {
+        fetch("/new", {
+            method: "GET",
+            mode: "cors"
+        })
+        .then(response => response.json())
+        .then(body => {
+            problemID = body.count + 1;
+        });
+    });
 
     function deleteCase(index) {
         testcases = [...testcases.slice(0, index), ...testcases.slice(index + 1)];
     }
 
     function addNew() {
-        if(newTestCase !== "") {
-            testcases.push(newTestCase);
+        if(newStdin !== "" && newStdout !== "") {
+            testcases.push({ stdin: newStdin, stdout: newStdout });
             testcases = testcases;
-            newTestCase = "";
+            newStdin = "";
+            newStdout = "";
         }
     }
 
@@ -27,7 +43,7 @@
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ submittedBy, problem, testcases })
+            body: JSON.stringify({ submittedBy, problemID, title, problem, testcases })
         })
         .then(response => response.json())
         .then(body => {
@@ -45,47 +61,76 @@
         align-items: center;
         gap: 20px;
         padding: 15px 0px;
+        background-color: #3C4653;
+    }
+    h1 {
+        color: white;
     }
     .add {
         display: grid;
         grid-template-columns: repeat(2, 50%);
-        gap: 50px;
+        gap: 100px;
     }
     textarea {
         width: 1000px;
-        height: 500px;
+        height: 300px;
+        color: black;
+        padding: 10px;
+        border-radius: 20px;
+    }
+    input {
+        color: black;
+        padding: 10px;
+        border-radius: 20px;
+    }
+    .title {
+        width: 500px;
     }
     .case {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
+        gap: 10px;
     }
     .each {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 40px;
+    }
+    button {
+        width: 225px;
+    }
+    .heading {
+        color: white;
+        font-size: 50px;
+        padding: 20px;
     }
 </style>
 
 <Appbar user={submittedBy} />
 
-<div class = "main">
-    <textarea bind:value={problem} />
+<div class = "main card">
+    <h1 class = "heading">Add a new problem.</h1>
+    <input class = "title" placeholder="Title of the problem" bind:value={title} />
+    <textarea placeholder="Write your problem description here..." bind:value={problem} />
     <div class = "add">
         <div class = "each">
             {#if testcases.length === 0}
-                <h1 class = "p-4">Testcases...</h1>
+                <h1 class = "p-4">No Testcases Added</h1>
             {/if}
             {#each testcases as test, idx}
-                <div class = "case">
-                    <div class = "card variant-filled-primary p-4">{test}</div>
-                    <button class = "btn variant-filled-error p-4" on:click = { () => deleteCase(idx) }>Delete</button>
+                <div class = "case card variant-filled-primary p-2">
+                    <p><strong>Input:</strong> {test.stdin}</p>
+                    <p><strong>Output:</strong> {test.stdout}</p>
+                    <button class = "btn variant-filled-error delete" on:click = { () => deleteCase(idx) }>Delete</button>
                 </div>
             {/each}
         </div>
         <div class = "main">
-            <input bind:value={newTestCase} />
+            <input placeholder="Input (STDIN)" bind:value={newStdin} />
+            <input placeholder="Output (STDOUT)" bind:value={newStdout} /> 
+            <br /><br />
             <button class = "btn variant-filled-primary" on:click={addNew}>Add Testcase</button>
             <button class = "btn variant-filled-success" on:click={submit}>Submit</button>
         </div>
