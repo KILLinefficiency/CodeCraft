@@ -18,7 +18,7 @@
         .then(response => response.json())
         .then(body => {
             console.log(body);
-            problem = body[0];
+            problem = body;
         });
     });
 </script>
