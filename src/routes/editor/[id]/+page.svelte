@@ -24,11 +24,24 @@
         })
         .then(response => response.json())
         .then(body => {
-            console.log(body);
             problem = body;
             testcases = body.testcases;
         });
     });
+    function run() {
+        fetch(`/editor/${data.id}`, {
+            method: "PUT",
+            mode: "cors",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ code, user, id: data.id })
+        })
+        .then(response => response.json())
+        .then(body => {
+            testcases = Object.entries(body);
+        });
+    }
 </script>
 
 <style>
@@ -66,6 +79,12 @@
     .each-case {
         @apply variant-filled-primary;
     }
+    .passed {
+        @apply variant-filled-success;
+    }
+    .failed {
+        @apply variant-filled-error;
+    }
 </style>
 
 <Appbar {user} />
@@ -89,12 +108,16 @@
             }}
         />
         <div class = "buttons">
-            <button class = "btn variant-filled-primary">Run</button>
+            <button class = "btn variant-filled-primary" on:click={run}>Run</button>
             <button class = "btn variant-filled-success">Submit</button>
         </div>
         <div class = "cases">
             {#each testcases as eachCase, idx}
-                <div class = "each-case p-4">{idx + 1}. Pending</div>
+                {#if eachCase[0] == undefined && eachCase[1] == undefined}
+                    <div class = "each-case p-4">{idx + 1}. Pending</div>
+                {:else}
+                    <div class = {eachCase[1] === "Passed" ? "passed p-4" : "failed p-4"}>{eachCase[0]}. {eachCase[1]}</div>
+                {/if}
             {/each}
         </div>
     </div>
