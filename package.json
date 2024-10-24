@@ -3,9 +3,10 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --host",
 		"build": "vite build",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"container": "docker build -t codecraft solutions/"
 	},
 	"devDependencies": {
 		"@skeletonlabs/skeleton": "^2.10.2",
