@@ -27,8 +27,9 @@ app.post("/", (req, res) => {
     }
 
     res.send(caseStatus);
+    process.exit();
 });
 
 app.listen(port, () => {
-    console.log("Sandbox environment listening on 127.0.0.1:3000")
+    console.log("Sandbox environment listening on 127.0.0.1:3000...");
 })
