@@ -27,7 +27,7 @@ app.post("/", (req, res) => {
     }
 
     res.send(caseStatus);
-    process.exit();
+    // process.exit();
 });
 
 app.listen(port, () => {
