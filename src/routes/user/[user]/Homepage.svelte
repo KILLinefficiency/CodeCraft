@@ -1,6 +1,7 @@
 <script>
     import { onMount, onDestroy } from "svelte";
     import Appbar from "$lib/Appbar.svelte";
+    import Cal from "$lib/Cal.svelte";
     export let user = "";
 
     let problems = [];
@@ -52,6 +53,12 @@
     tr:nth-child(odd) {
         @apply variant-ghost-secondary;
     }
+
+    .cal {
+        position: absolute;
+        top: 20%;
+        right: 10%;
+    }
 </style>
 
 <Appbar {user} />
@@ -65,4 +72,7 @@
             </tr>
         {/each}
     </table>
+    <div class = "cal">
+        <Cal />
+    </div>
 </div>
